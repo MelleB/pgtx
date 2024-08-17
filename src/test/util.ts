@@ -1,6 +1,6 @@
-import { Client } from "pg";
-import { onTestFinished, expect } from "vitest";
-import pgtx, { PgtxClient } from "..";
+import { Client } from 'pg';
+import { onTestFinished, expect } from 'vitest';
+import pgtx, { PgtxClient } from '..';
 
 export async function getClient(): Promise<PgtxClient> {
   const client = new Client({ connectionString: process.env.DATABASE_URL });

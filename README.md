@@ -29,9 +29,18 @@ $ npm install pg pgtx
 
 To use pgtx, wrap your PostgreSQL client with `pgtx`. You can then perform transactions as usual, and pgtx will manage savepoints automatically.
 
+`pgtx` has two modes:
+
+1. **Automated mode** runs inside nested functions and commits after the function ends. To roll back call `tx.rollback()` or throw an error.
+2. **Explicit mode** requires the user to call `tx.commit()` or `tx.rollback()` explicitly.
+
+### Usage -- Automated mode
+
+The caller provides an async function to the transaction method and committing happens after completion of this method.
+
 ```typescript
-import pgtx, { PgtxClient } from "pgtx";
-import { Client } from "pg";
+import pgtx, { PgtxClient } from 'pgtx';
+import { Client } from 'pg';
 
 const client = new Client({
   /* connection config */
@@ -40,7 +49,7 @@ const db: PgtxClient = pgtx(client);
 
 await db.transaction(async (tx) => {
   // Your transactional code here, e.g.
-  await db.query("INSERT INTO ...", [value]);
+  await db.query('INSERT INTO ...', [value]);
 
   await trx.transaction(async (nestedTx) => {
     // Nested transaction handled with savepoint
@@ -56,7 +65,7 @@ await db.transaction(async (tx) => {
   // parent transactions can handle the exception as well
   try {
     await tx.transation(async (nestedTx) => {
-      throw new Error("Some issue occured");
+      throw new Error('Some issue occured');
     });
   } catch (e) {
     // Handle recovery scenario
@@ -66,13 +75,35 @@ await db.transaction(async (tx) => {
 });
 ```
 
+### Usage -- Explicit mode
+
+The caller is responsible for calling either `commit()` or `rollback`. Be sure to handle failure scenario's using `try`/`catch`.
+
+```typescript
+const client = new Client({
+  /* connection config */
+});
+const db: PgtxClient = pgtx(client);
+
+const tx = await db.transaction();
+// Other code here, e.g.:
+await tx.query('INSERT INTO ...', [value]);
+
+const txNested = await tx.transaction(); // note the use of `tx` here
+// Other code here, e.g.:
+await txNested.query('INSERT INTO ...', [value]);
+await txNested.rollback();
+
+await tx.commit();
+```
+
 ## API
 
 **`PgtxClient`** extends `pg.Client` and adds:
 
-- `async transaction(tx: PgtxClient => void)`: Begins a new transaction or savepoint if already in a transaction.
-- `async rollback()`: Rolls back the current transaction or savepoint.
-- `async commit()`: Commits the current transaction or releases the savepoint -- although typically you will not use this method
+- `transaction(txFn?: (tx: PgtxClient) => void): Promise<PgtxClient>`: Begins a new transaction or savepoint if already in a transaction. If `txFn` is not defined it sets the client to the child context.
+- `rollback(): Promise<PgtxClient>`: Rolls back the current transaction or savepoint. Returns the client in the parent context.
+- `commit(): Promise<PgtxClient>`: Commits the current transaction or releases the savepoint -- although typically you will not use this method. Returns the client in the parent context.
 
 ## Contributions
 
