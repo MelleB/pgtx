@@ -1,7 +1,7 @@
-import { describe, test } from "vitest";
+import { describe, test, expect } from "vitest";
 import { getClient, createTable, checkRows, insertRow } from "./test/util";
 
-describe("pgNested", async () => {
+describe("happy flows", async () => {
   test("single level non explicit commit", async () => {
     const client = await getClient();
     await client.transaction(async (tx) => {
@@ -79,6 +79,65 @@ describe("pgNested", async () => {
       await tx.transaction(async (tx2) => {
         await insertRow(tx2, tableName, 1);
       });
+    });
+
+    await checkRows(client, tableName, 1);
+  });
+});
+
+describe("exception handling", async () => {
+  test("exception executes rollback", async () => {
+    const tableName = "table6";
+    const client = await getClient();
+
+    await createTable(client, tableName);
+    try {
+      await client.transaction(async (tx) => {
+        await insertRow(tx, tableName, 1);
+        throw new Error();
+      });
+    } catch (e) {
+      // catch-all
+    }
+
+    await checkRows(client, tableName, 0);
+  });
+
+  test("nested exception without try/catch rolls back everything", async () => {
+    const tableName = "table7";
+    const client = await getClient();
+
+    try {
+      await createTable(client, tableName);
+      await client.transaction(async (tx) => {
+        await insertRow(tx, tableName, 1);
+        await tx.transaction(async (tx2) => {
+          await insertRow(tx2, tableName, 2);
+          throw new Error("dummy-msg");
+        });
+      });
+    } catch (e) {
+      expect(e.toString()).toMatch(/dummy-msg/);
+    }
+
+    await checkRows(client, tableName, 0);
+  });
+
+  test("nested exception executes rollback to savepoint", async () => {
+    const tableName = "table8";
+    const client = await getClient();
+
+    await createTable(client, tableName);
+    await client.transaction(async (tx) => {
+      await insertRow(tx, tableName, 1);
+      try {
+        await tx.transaction(async (tx2) => {
+          await insertRow(tx2, tableName, 2);
+          throw new Error();
+        });
+      } catch (e) {
+        // catch error
+      }
     });
 
     await checkRows(client, tableName, 1);

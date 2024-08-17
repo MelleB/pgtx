@@ -26,7 +26,12 @@ class TransactionContext {
     }
 
     const childCtx = new TransactionContext(this.client, this, activeSavePointName);
-    await childTransaction(createProxy(this.client, childCtx));
+    try {
+      await childTransaction(createProxy(this.client, childCtx));
+    } catch (e) {
+      await childCtx.rollback();
+      throw e;
+    }
 
     if (childCtx.status === TransactionStatus.ACTIVE) {
       await childCtx.commit();

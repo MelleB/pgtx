@@ -27,16 +27,17 @@ npm install pg pgtx
 To use pgtx, wrap your PostgreSQL client with `pgtx`. You can then perform transactions as usual, and pgtx will manage savepoints automatically.
 
 ```typescript
-import pgtx from "pgtx";
+import pgtx, { PgtxClient } from "pgtx";
 import { Client } from "pg";
 
 const client = new Client({
   /* connection config */
 });
-const db = pgtx(client);
+const db: PgtxClient = pgtx(client);
 
 await db.transaction(async (tx) => {
-  // Your transactional code here
+  // Your transactional code here, e.g.
+  await db.query("INSERT INTO ...", [value]);
 
   await trx.transaction(async (nestedTx) => {
     // Nested transaction handled with savepoint
@@ -45,8 +46,18 @@ await db.transaction(async (tx) => {
 
   await tx.transaction(async (nestedTx) => {
     // Or call rollback in order to rollback to the previous savepoint
-    nestedTx.rollback();
+    await nestedTx.rollback();
   });
+
+  // If an exception is caught it is rolled back and propagated so all
+  // parent transactions can handle the exception as well
+  try {
+    await tx.transation(async (nestedTx) => {
+      throw new Error("Some issue occured");
+    });
+  } catch (e) {
+    // Handle recovery scenario
+  }
 
   // Commit is applied automatically
 });
@@ -54,9 +65,11 @@ await db.transaction(async (tx) => {
 
 ## API
 
-- **`transaction`**: Begins a new transaction or savepoint if already in a transaction.
-- **`commit`**: Commits the current transaction or releases the savepoint.
-- **`rollback`**: Rolls back the current transaction or to the savepoint.
+**`PgtxClient`** extends `pg.Client` and adds:
+
+- `async transaction(tx: PgtxClient => void)`: Begins a new transaction or savepoint if already in a transaction.
+- `async rollback()`: Rolls back the current transaction or savepoint.
+- `async commit()`: Commits the current transaction or releases the savepoint -- although typically you will not use this method
 
 ## License
 
