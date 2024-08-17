@@ -11,7 +11,11 @@ export async function getClient(): Promise<PgtxClient> {
   return pgtx(client);
 }
 
-export async function checkRows(client: Client, tableName: string, expectedCount: number) {
+export async function checkRows(
+  client: Client,
+  tableName: string,
+  expectedCount: number,
+) {
   const result = await client.query(`SELECT * FROM ${tableName}`);
 
   expect(result.rowCount).equals(expectedCount);
@@ -25,6 +29,10 @@ export async function createTable(client: Client, tableName: string) {
   await client.query(`CREATE TABLE ${tableName} (x INT);`);
 }
 
-export async function insertRow(client: Client, tableName: string, value: number) {
+export async function insertRow(
+  client: Client,
+  tableName: string,
+  value: number,
+) {
   await client.query(`INSERT INTO ${tableName}(x) VALUES ($1)`, [value]);
 }

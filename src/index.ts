@@ -12,10 +12,12 @@ class TransactionContext {
   constructor(
     private client: Client,
     private parentTransaction?: TransactionContext,
-    private activeSavePoint?: string
+    private activeSavePoint?: string,
   ) {}
 
-  async transaction(childTransaction: (client: PgtxClient) => Promise<void>): Promise<void> {
+  async transaction(
+    childTransaction: (client: PgtxClient) => Promise<void>,
+  ): Promise<void> {
     let activeSavePointName: string | undefined = undefined;
 
     if (this.parentTransaction) {
@@ -25,7 +27,11 @@ class TransactionContext {
       await this.client.query("BEGIN");
     }
 
-    const childCtx = new TransactionContext(this.client, this, activeSavePointName);
+    const childCtx = new TransactionContext(
+      this.client,
+      this,
+      activeSavePointName,
+    );
     try {
       await childTransaction(createProxy(this.client, childCtx));
     } catch (e) {
@@ -72,18 +78,23 @@ function createProxy(client: Client, transactionContext: TransactionContext) {
   return new Proxy(
     { client, transactionContext },
     {
-      get(target: { client: Client; transactionContext: TransactionContext }, prop: string) {
+      get(
+        target: { client: Client; transactionContext: TransactionContext },
+        prop: string,
+      ) {
         if (prop in target.client) {
           // @ts-expect-error prop cannot be used as index
           return target.client[prop].bind(target.client);
         }
         if (prop in target.transactionContext) {
           // @ts-expect-error prop cannot be used as index
-          return target.transactionContext[prop].bind(target.transactionContext);
+          return target.transactionContext[prop].bind(
+            target.transactionContext,
+          );
         }
         return undefined;
       },
-    }
+    },
   ) as unknown as Client & TransactionContext;
 }
 

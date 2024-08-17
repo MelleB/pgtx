@@ -21,6 +21,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint .",
+    "prettier": "prettier --write .",
     "test": "vitest run",
     "test:watch": "vitest"
   },
