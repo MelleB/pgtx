@@ -5,5 +5,9 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     globalSetup: './vitest.setup.ts',
+    coverage: {
+      reporter: ['text', 'json-summary', 'json', 'html'],
+      include: ['src/**/*.ts'],
+    },
   },
 });
