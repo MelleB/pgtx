@@ -184,7 +184,7 @@ describe('explicit mode', async () => {
   });
 
   test('nested transaction - rollback', async () => {
-    const tableName = 'table11';
+    const tableName = 'table12';
     const client = await getClient();
 
     await createTable(client, tableName);
@@ -195,5 +195,23 @@ describe('explicit mode', async () => {
     await tx.rollback();
 
     await checkRows(client, tableName, 0);
+  });
+
+  test('commit twice throws', async () => {
+    const client = await getClient();
+    const tx = await client.transaction();
+    await tx.commit();
+    await expect(() => tx.commit()).rejects.toThrow(
+      'Cannot commit a transaction that is not active',
+    );
+  });
+
+  test('rollback twice throws', async () => {
+    const client = await getClient();
+    const tx = await client.transaction();
+    await tx.rollback();
+    await expect(() => tx.rollback()).rejects.toThrow(
+      'Cannot roll back a transaction that is not active',
+    );
   });
 });
