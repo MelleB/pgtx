@@ -1,7 +1,15 @@
 {
   "name": "pgtx",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Simple node-postgres wrapper that abstracts transactions and savepoints",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MelleB/pgtx.git"
+  },
+  "homepage": "https://github.com/MelleB/pgtx#readme",
+  "bugs": {
+    "url": "https://github.com/MelleB/pgtx/issues"
+  },
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

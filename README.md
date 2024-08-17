@@ -1,7 +1,5 @@
 # pgtx
 
----
-
 Keep your PostgreSQL transactions safe and simple with pgtx.
 
 ---
@@ -21,6 +19,8 @@ Install pgtx via npm:
 ```bash
 npm install pg pgtx
 ```
+
+... or use your package manager du jour.
 
 ## Usage
 
