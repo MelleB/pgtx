@@ -1,20 +1,21 @@
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, assert } from 'vitest';
 import { getClient, createTable, checkRows, insertRow } from './test/util';
 
 describe('happy flows', async () => {
   test('single level non explicit commit', async () => {
+    const tableName = 'pgtx_happy_table1';
     const client = await getClient();
     await client.transaction(async (tx) => {
-      await createTable(tx, 'table1');
-      await insertRow(tx, 'table1', 1);
+      await createTable(tx, tableName);
+      await insertRow(tx, tableName, 1);
     });
 
-    await checkRows(client, 'table1', 1);
+    await checkRows(client, tableName, 1);
   });
 
   test('nested multiple non explicit commits', async () => {
     const client = await getClient();
-    const tableName = 'table2';
+    const tableName = 'pgtx_happy_table2';
 
     await client.transaction(async (tx) => {
       await createTable(tx, tableName);
@@ -36,7 +37,7 @@ describe('happy flows', async () => {
   });
 
   test('simple rollback', async () => {
-    const tableName = 'table3';
+    const tableName = 'pgtx_happy_table3';
     const client = await getClient();
     await createTable(client, tableName);
 
@@ -49,7 +50,7 @@ describe('happy flows', async () => {
   });
 
   test('nested rollback', async () => {
-    const tableName = 'table4';
+    const tableName = 'pgtx_happy_table4';
     const client = await getClient();
 
     await client.transaction(async (tx) => {
@@ -65,7 +66,7 @@ describe('happy flows', async () => {
   });
 
   test('nested rollback with continuation', async () => {
-    const tableName = 'table5';
+    const tableName = 'pgtx_happy_table5';
     const client = await getClient();
 
     await client.transaction(async (tx) => {
@@ -83,11 +84,39 @@ describe('happy flows', async () => {
 
     await checkRows(client, tableName, 1);
   });
+
+  test('committing an unstarted transactions works', async () => {
+    const client = await getClient();
+
+    let noticeCount = 0;
+    client.on('notice', (notice) => {
+      noticeCount += 1;
+      assert.equal(notice.message, 'there is no transaction in progress');
+    });
+
+    await client.commit();
+
+    assert.equal(noticeCount, 1);
+  });
+
+  test('rolling back an unstarted transactions works', async () => {
+    const client = await getClient();
+
+    let noticeCount = 0;
+    client.on('notice', (notice) => {
+      noticeCount += 1;
+      assert.equal(notice.message, 'there is no transaction in progress');
+    });
+
+    await client.rollback();
+
+    assert.equal(noticeCount, 1);
+  });
 });
 
 describe('exception handling', async () => {
   test('exception executes rollback', async () => {
-    const tableName = 'table6';
+    const tableName = 'pgtx_exception_table1';
     const client = await getClient();
 
     await createTable(client, tableName);
@@ -104,7 +133,7 @@ describe('exception handling', async () => {
   });
 
   test('nested exception without try/catch rolls back everything', async () => {
-    const tableName = 'table7';
+    const tableName = 'pgtx_exception_table2';
     const client = await getClient();
 
     try {
@@ -124,7 +153,7 @@ describe('exception handling', async () => {
   });
 
   test('nested exception executes rollback to savepoint', async () => {
-    const tableName = 'table8';
+    const tableName = 'pgtx_exception_table3';
     const client = await getClient();
 
     await createTable(client, tableName);
@@ -146,7 +175,7 @@ describe('exception handling', async () => {
 
 describe('explicit mode', async () => {
   test('unnested transaction - commit', async () => {
-    const tableName = 'table9';
+    const tableName = 'pgtx_explicit_table1';
     const client = await getClient();
 
     await createTable(client, tableName);
@@ -158,7 +187,7 @@ describe('explicit mode', async () => {
   });
 
   test('unnested transaction - rollback', async () => {
-    const tableName = 'table10';
+    const tableName = 'pgtx_explicit_table2';
     const client = await getClient();
 
     await createTable(client, tableName);
@@ -170,7 +199,7 @@ describe('explicit mode', async () => {
   });
 
   test('nested transaction - commit', async () => {
-    const tableName = 'table11';
+    const tableName = 'pgtx_explicit_table3';
     const client = await getClient();
 
     await createTable(client, tableName);
@@ -184,7 +213,7 @@ describe('explicit mode', async () => {
   });
 
   test('nested transaction - rollback', async () => {
-    const tableName = 'table12';
+    const tableName = 'pgtx_explicit_table4';
     const client = await getClient();
 
     await createTable(client, tableName);
