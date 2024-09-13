@@ -51,7 +51,7 @@ await db.transaction(async (tx) => {
   // Your transactional code here, e.g.
   await db.query('INSERT INTO ...', [value]);
 
-  await trx.transaction(async (nestedTx) => {
+  await tx.transaction(async (nestedTx) => {
     // Nested transaction handled with savepoint
     // Savepoint is automatically released here
   });
