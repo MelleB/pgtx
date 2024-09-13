@@ -1,5 +1,9 @@
 # CHANGELOG
 
+# 0.4.0
+
+- Initial release
+
 # 0.3.0
 
 - Add explicit mode

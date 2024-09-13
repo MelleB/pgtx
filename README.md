@@ -105,6 +105,11 @@ await tx.commit();
 - `rollback(): Promise<PgtxClient>`: Rolls back the current transaction or savepoint. Returns the client in the parent context.
 - `commit(): Promise<PgtxClient>`: Commits the current transaction or releases the savepoint -- although typically you will not use this method. Returns the client in the parent context.
 
+## Changelog
+
+This library is using a semver versioning scheme.
+Changes are recorded in the [changelog](./CHANGELOG.md).
+
 ## Contributions
 
 Contributions are welcome! Please submit issues or pull requests to the GitHub repository.
