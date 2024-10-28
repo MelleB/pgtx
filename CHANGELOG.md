@@ -1,5 +1,9 @@
 # CHANGELOG
 
+# 0.4.2
+
+- Bump dependencies
+
 # 0.4.1
 
 - Initial release
