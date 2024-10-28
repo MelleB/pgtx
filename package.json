@@ -1,6 +1,6 @@
 {
   "name": "@melleb/pgtx",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Simple node-postgres wrapper that abstracts transactions and savepoints",
   "repository": {
     "type": "git",
