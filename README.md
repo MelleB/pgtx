@@ -108,7 +108,7 @@ await tx.commit();
 ## Changelog
 
 This library is using a semver versioning scheme.
-Changes are recorded in the [changelog](./CHANGELOG.md).
+Changes are recorded in the [changelog](./CHANGELOG.md) using [Changesets](https://www.npmjs.com/package/@changesets/cli).
 
 ## Contributions
 
@@ -127,7 +127,10 @@ To get started:
 
 1. Start database
 2. Either set the `DATABASE_URL` or `cp .env.dist .env` and edit `DATABASE_URL` variable
-3. Run tests with `npm test`
+3. Run tests with `npm test` -- everything should pass
+4. Make changes to codebase in a separate branch
+5. Run `npx changset` to describe the changes you made
+6. Create a Pull Request
 
 ## License
 
