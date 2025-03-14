@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 0.4.4
+
+### Patch Changes
+
+- a38b3aa: - Remove stub package @types/eslint\_\_js from dev dependencies
+  - Fix audit issue in dev dependency
+  - Improve changeset docs
+
 ## 0.4.3
 
 ### Patch Changes
