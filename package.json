@@ -50,14 +50,14 @@
     "eslint-config-prettier": "10.1.1",
     "eslint-plugin-prettier": "5.2.3",
     "husky": "9.1.7",
-    "lint-staged": "15.4.3",
+    "lint-staged": "15.5.0",
     "prettier": "3.5.3",
     "tsup": "8.4.0",
     "typescript": "5.8.2",
-    "typescript-eslint": "8.26.0",
+    "typescript-eslint": "8.26.1",
     "vitest": "3.0.8"
   },
   "peerDependencies": {
-    "pg": "8.13.3"
+    "pg": "8.14.0"
   }
 }
