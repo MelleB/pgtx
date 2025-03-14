@@ -132,6 +132,10 @@ To get started:
 5. Run `npx changset` to describe the changes you made
 6. Create a Pull Request
 
+A code owner can review the PR and publish a new version on NPM with the following commands:
+1. `npx changeset version`, this captures the change description in the PR and appends it to the changelog
+2. `npx changeset publish`, which publishes the changes on [NPM](https://www.npmjs.com/package/@melleb/pgtx).
+
 ## License
 
 This library is licensed under the [MIT license](./LICENSE.md).
