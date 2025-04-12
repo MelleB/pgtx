@@ -42,7 +42,7 @@
   "devDependencies": {
     "@changesets/cli": "2.28.1",
     "@eslint/js": "9.24.0",
-    "@types/pg": "8.11.11",
+    "@types/pg": "8.11.12",
     "@vitest/coverage-v8": "3.1.1",
     "dotenv": "16.5.0",
     "eslint": "9.24.0",
