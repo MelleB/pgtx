@@ -40,7 +40,7 @@
   "author": "MelleB",
   "license": "MIT",
   "devDependencies": {
-    "@changesets/cli": "2.29.3",
+    "@changesets/cli": "2.29.4",
     "@eslint/js": "9.26.0",
     "@types/pg": "8.15.1",
     "@vitest/coverage-v8": "3.1.3",
