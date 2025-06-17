@@ -43,7 +43,7 @@
     "@changesets/cli": "2.29.4",
     "@eslint/js": "9.29.0",
     "@types/pg": "8.15.4",
-    "@vitest/coverage-v8": "3.2.3",
+    "@vitest/coverage-v8": "3.2.4",
     "dotenv": "16.5.0",
     "eslint": "9.29.0",
     "eslint-config-prettier": "10.1.5",
@@ -54,7 +54,7 @@
     "tsup": "8.5.0",
     "typescript": "5.8.3",
     "typescript-eslint": "8.34.1",
-    "vitest": "3.2.3"
+    "vitest": "3.2.4"
   },
   "peerDependencies": {
     "pg": "8.16.0"
