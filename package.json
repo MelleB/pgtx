@@ -57,6 +57,6 @@
     "vitest": "3.2.4"
   },
   "peerDependencies": {
-    "pg": "8.16.0"
+    "pg": "8.16.1"
   }
 }
